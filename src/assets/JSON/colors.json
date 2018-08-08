@@ -1,0 +1,40 @@
+{
+    "data" : [
+        {
+            "color": "red",
+            "code": "red"
+	},
+        {
+            "color": "green",
+            "code": "green"
+	},
+        {
+            "color": "blue",
+            "code": "blue"
+	},
+        {
+            "color": "cyan",
+            "code": "cyan"
+	},
+        {
+            "color": "magenta",
+            "code": "magenta"
+	},
+        {
+            "color": "yellow",
+            "code": "yellow"
+	},
+        {
+            "color": "black",
+            "code": "black"
+	},
+        {
+            "color": "Orange",
+            "code": "Orange"
+	},
+        {
+            "color": "gray",
+            "code": "gray"
+	}
+    ]
+}

@@ -1,0 +1,118 @@
+<div class="content-section implementation">
+    <h3 class="first">Car Demo</h3>
+    <button (click)="addRecord()" href="javascript:void(0)" pButton type="button" label="Add" ></button>
+    
+    <p-table #dt [columns]="cols" [value]="cars" [(selection)]="selectedCars3" dataKey="vin" [paginator]="true" [rows]="8"
+        (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
+        sortMode="multiple"   (onEditComplete)="onEditComplete($event)">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th style="width: 5em">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th style="width: 5em">Edit</th>
+            <th style="width: 3em">Delete</th>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                {{col.header}}
+                <p-sortIcon [field]="col.field"></p-sortIcon>
+            </th>
+        </tr>
+        <tr>
+            <th style="width: 5em"></th>
+            <th style="width: 5em"></th>
+            <th style="width: 3em"></th>
+            <th *ngFor="let col of columns">
+                <input class="ui-inputtext ui-corner-all ui-state-default ui-widget" pInputText type="text" (input)="dt.filter($event.target.value, col.field, col.filterMatchMode)">
+            </th>
+        </tr>
+        
+        <ng-container *ngIf="addRecordFlag">
+            <tr>
+                <th style="width: 5em">&nbsp;</th>
+                <th style="width: 5em"><a (click)="saveRecord(rowNumber)" href="javascript:void(0)"><img src="/assets/img/save.svg" style="height:20px; width:20px"></a></th>
+                <th style="width: 3em"><a (click)="cancelAddrecord()" href="javascript:void(0)"><img src="/assets/img/close.svg" style="height:20px; width:20px"></a></th>
+                <th><input class="ui-inputtext ui-corner-all ui-state-default ui-widget" type="text" [(ngModel)]="editRecordObj.vin"></th>
+                <th>
+                    <select [(ngModel)]="editRecordObj.year" class="ui-inputtext ui-corner-all ui-state-default ui-widget">
+                        <option value="0">--All--</option>
+                        <option *ngFor="let year of years" value={{year}}>{{year}}</option>
+                    </select>
+                </th>
+                <th><input [attr.disabled]="true" class="ui-inputtext ui-corner-all ui-state-default ui-widget" type="text" [(ngModel)]="editRecordObj.brand"></th>
+                <th>
+                    <p-autoComplete [(ngModel)]="selectedColor" [suggestions]="filteredColorsSingle" 
+                        (completeMethod)="filterColorSingle($event)" field="color" [size]="30"
+                        placeholder="Colors" [minLength]="1" (onSelect)="onSuggetionSelect(selectedColor)"
+                        [inputStyleClass] = "'ui-inputtext ui-corner-all ui-state-default ui-widget width-class'"></p-autoComplete>
+                    <span style="margin-left:10px">Color {{selectedColor ? selectedColor.color || color : 'none'}}</span>
+                </th>
+            </tr>
+        </ng-container>
+        
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowNumber="rowIndex">
+        <tr [pSelectableRow]="rowData">
+            <td>
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td>
+                <button *ngIf="rowData.id != editRecordId" (click)="onEdit(rowData.id, rowData)" href="javascript:void(0)" pButton type="button" label="Edit" ></button>
+                <a *ngIf="rowData.id == editRecordId" (click)="updateRecord(rowNumber)" href="javascript:void(0)"><img src="/assets/img/save.svg" style="height:20px; width:20px"></a>
+                <a *ngIf="rowData.id == editRecordId" (click)="cancelEdit()" href="javascript:void(0)"><img src="/assets/img/close.svg" style="height:20px; width:20px"></a>
+            </td>
+            <td>
+                <a (click)="deleteRecord(rowNumber)" href="javascript:void(0)"><img src="/assets/img/cancel.svg" style="height:20px; width:20px"></a>
+            </td>
+            
+            <td>
+                <ng-container *ngIf = "rowData.id == editRecordId">
+                    <input class="ui-inputtext ui-corner-all ui-state-default ui-widget" type="text" [(ngModel)]="editRecordObj.vin">
+                </ng-container>
+                <ng-container *ngIf="rowData.id !== editRecordId">
+                    {{rowData.vin}}
+                </ng-container>
+            </td>
+            
+            <td>
+                <ng-container *ngIf = "rowData.id == editRecordId">
+                    <select [(ngModel)]="editRecordObj.year">
+                        <option value="0">--All--</option>
+                        <option *ngFor="let year of years" value={{year}}>{{year}}</option>
+                    </select>
+                </ng-container>
+                <ng-container *ngIf="rowData.id !== editRecordId">
+                    {{rowData.year}}
+                </ng-container>
+            </td>
+            
+            <td>
+                <ng-container *ngIf = "rowData.id == editRecordId">
+                    <input class="ui-inputtext ui-corner-all ui-state-default ui-widget" type="text" class="ui-inputtext ui-corner-all ui-state-default ui-widget" [(ngModel)]="editRecordObj.brand">
+                </ng-container>
+                <ng-container *ngIf="rowData.id !== editRecordId">
+                    {{rowData.brand}}
+                </ng-container>
+            </td>
+            
+             <td>
+                <ng-container *ngIf = "rowData.id == editRecordId">
+                    <!--<input type="text" [(ngModel)]="editRecordObj.color">-->
+                    
+                    <p-autoComplete [(ngModel)]="selectedColor" [suggestions]="filteredColorsSingle" 
+                        (completeMethod)="filterColorSingle($event)" field="color" [size]="30"
+                        placeholder="Colors" [minLength]="1" (onSelect)="onSuggetionSelect(selectedColor)"
+                        [inputStyleClass] = "'ui-inputtext ui-corner-all ui-state-default ui-widget width-class'"></p-autoComplete>
+                    <span style="margin-left:10px">Color {{selectedColor ? selectedColor.color || color : 'none'}}</span>
+                    
+                </ng-container>
+                <ng-container *ngIf="rowData.id !== editRecordId">
+                    {{rowData.color}}
+                </ng-container>
+            </td>
+            <!---<td *ngFor="let col of columns">
+                {{rowData[col.field]}}
+            </td>-->
+        </tr>
+    </ng-template>
+    </p-table>
+</div>
